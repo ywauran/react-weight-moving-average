@@ -1,16 +1,24 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD1dAhmFu4Sl0DF8503F1NCocejGdpfodg",
-  authDomain: "medical-plant-89ef2.firebaseapp.com",
-  projectId: "medical-plant-89ef2",
-  storageBucket: "medical-plant-89ef2.appspot.com",
-  messagingSenderId: "810817942686",
-  appId: "1:810817942686:web:26620bbe6a5adf2369378f",
+  apiKey: "AIzaSyBDLeYiUvS6npWNAIbHd5TjgdO4XWcD1HE",
+  authDomain: "starter-react-firebase.firebaseapp.com",
+  projectId: "starter-react-firebase",
+  storageBucket: "starter-react-firebase.appspot.com",
+  messagingSenderId: "760158541798",
+  appId: "1:760158541798:web:d6807a1e33df4e50172827",
+  measurementId: "G-HK3VQQZFEJ",
 };
 
+// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
+
+// Dapatkan instance autentikasi Firebase
 const auth = getAuth(app);
 
-export { app, auth };
+// Dapatkan instance Firestore Firebase
+const db = getFirestore(app);
+
+export { app, auth, db };

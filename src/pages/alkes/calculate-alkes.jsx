@@ -13,7 +13,6 @@ const CalculateAlkes = () => {
   return (
     <Layout>
       <h1 className="mb-8 text-3xl font-bold">Perhitungan Alkes 1</h1>
-      <div>{id}</div>
       <div className="mb-8">
         <label htmlFor="" className="label">
           Jumlah Periode (Mingguan)
