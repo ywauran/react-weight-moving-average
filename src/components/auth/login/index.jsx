@@ -21,7 +21,7 @@ const Login = () => {
 
   return (
     <div>
-      {userLoggedIn && <Navigate to={"/dashboard"} replace={true} />}
+      {userLoggedIn && <Navigate to={"/alkes"} replace={true} />}
 
       <main className="flex self-center w-full h-screen place-content-center place-items-center">
         <div className="p-4 space-y-5 text-gray-600 border shadow-xl w-96 rounded-xl">
