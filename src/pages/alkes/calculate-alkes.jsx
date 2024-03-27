@@ -2,17 +2,36 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../layout";
 import { useParams } from "react-router-dom";
 import LineChart from "../../components/chart/line-chart";
+import { getAlkesById } from "../../service/alkes";
+import { getSalesByAlkesId } from "../../service/sales";
 
 const CalculateAlkes = () => {
   const { id } = useParams();
-  const [period, setPeriod] = useState(3); // Mengubah periode menjadi 3
-  const [dataAlkes, setDataAlkes] = useState([
-    { id: 1, transactionAmount: 10 },
-    { id: 2, transactionAmount: 20 },
-    { id: 3, transactionAmount: 30 },
-  ]);
-  const [wma, setWma] = useState(Array(dataAlkes.length).fill(0));
+  const [period, setPeriod] = useState(3);
+
+  const [sales, setSales] = useState([]); // Mengubah periode menjadi 3
+  const [wma, setWma] = useState(Array(sales?.length).fill(0));
   const [actual, setActual] = useState([]);
+  const [alkes, setAlkes] = useState({});
+
+  const fetchAlkes = async () => {
+    try {
+      const alkes = await getAlkesById(id);
+      setAlkes(alkes);
+    } catch (error) {
+      console.error("Error fetching alkes:", error);
+    }
+  };
+
+  const fetchSalesByAlkesId = async () => {
+    try {
+      const sales = await getSalesByAlkesId(id);
+      console.log(sales);
+      setSales(sales);
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+    }
+  };
 
   const calculateWMA = (startIndex) => {
     let sum = 0;
@@ -20,7 +39,7 @@ const CalculateAlkes = () => {
     let weight = period;
 
     for (let i = 0; i < period; i++) {
-      sum += dataAlkes[startIndex + i].transactionAmount * weight;
+      sum += sales[startIndex + i].salesAmount * weight;
       weightSum += weight;
       weight--;
     }
@@ -31,7 +50,7 @@ const CalculateAlkes = () => {
   useEffect(() => {
     if (period > 0) {
       const calculatedWma = [];
-      for (let i = 0; i < dataAlkes.length; i++) {
+      for (let i = 0; i < sales.length; i++) {
         if (i >= period - 1) {
           calculatedWma.push(calculateWMA(i - period + 1).toFixed(2));
         } else {
@@ -40,16 +59,21 @@ const CalculateAlkes = () => {
       }
       setWma(calculatedWma);
     }
-  }, [dataAlkes, period]);
+  }, [sales, period]);
 
   useEffect(() => {
-    const actualData = dataAlkes.map((item) => item.transactionAmount);
+    const actualData = sales.map((item) => item.salesAmount);
     setActual(actualData);
-  }, [dataAlkes]);
+  }, [sales]);
+
+  useEffect(() => {
+    fetchAlkes();
+    fetchSalesByAlkesId();
+  }, [id]);
 
   return (
     <Layout>
-      <h1 className="mb-8 text-3xl font-bold">Perhitungan Alkes 1</h1>
+      <h1 className="mb-8 text-3xl font-bold">Perhitungan {alkes?.name}</h1>
       <div className="mb-8">
         <label htmlFor="period" className="label">
           Jumlah Periode (Mingguan)
@@ -74,11 +98,11 @@ const CalculateAlkes = () => {
             </tr>
           </thead>
           <tbody>
-            {dataAlkes.map((alkes, index) => (
+            {sales.map((alkes, index) => (
               <tr key={alkes.id}>
                 <td>{index + 1}</td>
                 <td>Minggu Ke-{index + 1}</td>
-                <td>{alkes.transactionAmount}</td>
+                <td>{alkes.salesAmount}</td>
                 <td>{wma[index]}</td>
               </tr>
             ))}
@@ -92,13 +116,13 @@ const CalculateAlkes = () => {
       <div className="mt-8">
         <h2>Proses Perhitungan Weighted Moving Average (WMA)</h2>
         <ol>
-          {dataAlkes.map((_, index) => (
+          {sales.map((_, index) => (
             <li key={index}>
               Minggu ke-{index + 1}:{" "}
               {index >= period - 1
-                ? `(${dataAlkes
+                ? `(${sales
                     .slice(index - period + 1, index + 1)
-                    .map((item) => item.transactionAmount)
+                    .map((item) => item.salesAmount)
                     .join(" + ")}) * (3 + 2 + 1) / 6 = ${wma[index]}`
                 : "Belum dapat dihitung"}
             </li>

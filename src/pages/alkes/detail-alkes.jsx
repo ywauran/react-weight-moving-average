@@ -2,6 +2,7 @@ import Layout from "../../layout";
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getSalesByAlkesId } from "../../service/sales";
+import { getAlkesById } from "../../service/alkes";
 import Modal from "../../components/modal/modal";
 import FormCreateSales from "../../components/form/form-create-sales";
 import FormUpdateSales from "../../components/form/form-update-sales";
@@ -15,6 +16,16 @@ const DetailAlkes = () => {
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [sales, setSales] = useState([]);
   const [idSales, setIdSales] = useState(null);
+  const [alkes, setAlkes] = useState({});
+
+  const fetchAlkes = async () => {
+    try {
+      const alkes = await getAlkesById(id);
+      setAlkes(alkes);
+    } catch (error) {
+      console.error("Error fetching alkes:", error);
+    }
+  };
 
   const fetchSalesByAlkesId = async () => {
     try {
@@ -27,6 +38,7 @@ const DetailAlkes = () => {
 
   useEffect(() => {
     fetchSalesByAlkesId();
+    fetchAlkes();
   }, [id]);
 
   return (
@@ -72,7 +84,7 @@ const DetailAlkes = () => {
           />
         </Modal>
       )}
-      <h1 className="mb-8 text-3xl font-bold">Alkes 1</h1>
+      <h1 className="mb-8 text-3xl font-bold">{alkes?.name}</h1>
       <div className="flex items-center justify-between mb-8">
         <button
           onClick={() => setIsModalCreate(true)}
