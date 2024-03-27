@@ -51,7 +51,11 @@ const FormCreateAlkes = ({ fetchData, setOpenModal }) => {
         <button onClick={() => setOpenModal(false)} className="w-16 btn">
           Tidak
         </button>
-        <button onClick={handleCreate} className="w-16 btn btn-primary">
+        <button
+          onClick={handleCreate}
+          className="w-16 btn btn-primary"
+          disabled={isLoading}
+        >
           {isLoading ? <Loading size="sm" /> : "Ya"}
         </button>
       </div>

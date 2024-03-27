@@ -4,21 +4,14 @@ import Layout from "../../layout";
 import Modal from "../../components/modal/modal";
 import FormCreateAlkes from "../../components/form/form-create-alkes";
 import FormUpdateAlkes from "../../components/form/form-update-alkes";
-import FormConfirmation from "../../components/form/form-confirmation";
-import {
-  createAlkes,
-  getAlkesById,
-  deleteAlkes,
-  getAllAlkes,
-  updateAlkes,
-} from "../../service/alkes";
+import FormDeleteAlkes from "../../components/form/form-delete-alkes";
+import { getAlkesById, deleteAlkes, getAllAlkes } from "../../service/alkes";
 import TableSkeleton from "../../components/skeleton/table";
 
 const Alkes = () => {
   const [data, setData] = useState([]);
   const [alkes, setAlkes] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
   const [isModalCreate, setIsModalCreate] = useState(false);
   const [isModalUpdate, setIsModalUpdate] = useState(false);
   const [isModalDelete, setIsModalDelete] = useState(false);
@@ -43,14 +36,6 @@ const Alkes = () => {
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching Alkes:", error);
-    }
-  };
-  const handleDelete = async (id) => {
-    try {
-      await deleteAlkes(id);
-      setData(data.filter((alkesItem) => alkesItem.id !== id));
-    } catch (error) {
-      console.error("Error deleting Alkes:", error.message);
     }
   };
 
@@ -89,7 +74,7 @@ const Alkes = () => {
           title="Hapus Alkes"
           setOpenModal={setIsModalDelete}
           children={
-            <FormConfirmation
+            <FormDeleteAlkes
               setOpenModal={setIsModalDelete}
               fetchData={fetchAlkes}
               id={id}

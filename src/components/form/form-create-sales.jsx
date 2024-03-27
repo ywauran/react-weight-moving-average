@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import { createSale } from "../../service/sales";
+import Loading from "../loading";
 
-const FormCreateSales = ({ setData, data, setOpenModal, id }) => {
+const FormCreateSales = ({ fetchData, setOpenModal, id }) => {
   const [newSale, setNewSale] = useState({
     salesAmount: 0,
-    createdAt: new Date().toISOString(), // Set createdAt to current time
-    updatedAt: new Date().toISOString(), // Set updatedAt to current time
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewSale((prevSale) => ({
       ...prevSale,
-      [name]: value, // Menggunakan name, bukan newSales
-      updatedAt: new Date().toISOString(), // Update updatedAt on change
+      [name]: value,
+      updatedAt: new Date().toISOString(),
     }));
   };
 
   const handleCreate = async () => {
+    setIsLoading(true);
     try {
-      const createdSale = await createSale(newSale, id); // Menggunakan createSale
-      setData([...data, createdSale]);
-      setOpenModal(false); // Close modal on successful creation
+      await createSale(newSale, id);
+      fetchData();
+      setIsLoading(false);
+      setOpenModal(false);
     } catch (error) {
       console.error("Error creating Sale:", error.message);
+      setIsLoading(false);
     }
   };
 
@@ -46,8 +51,12 @@ const FormCreateSales = ({ setData, data, setOpenModal, id }) => {
         <button onClick={() => setOpenModal(false)} className="w-16 btn">
           Tidak
         </button>
-        <button onClick={handleCreate} className="w-16 btn btn-primary">
-          Ya
+        <button
+          onClick={handleCreate}
+          className="w-16 btn btn-primary"
+          disabled={isLoading}
+        >
+          {isLoading ? <Loading size="sm" /> : "Ya"}
         </button>
       </div>
     </>

@@ -1,18 +1,19 @@
 import React from "react";
 import Loading from "../loading";
 import { useState } from "react";
-import { deleteAlkes } from "../../service/alkes";
+import { deleteSale } from "../../service/sales";
 
-const FormConfirmation = ({ setOpenModal, id, fetchData }) => {
+const FormDeleteSales = ({ setOpenModal, id, fetchData }) => {
   const [isLoading, setLoading] = useState(false);
+
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await deleteAlkes(id);
+      await deleteSale(id);
       fetchData();
       setOpenModal(false);
     } catch (error) {
-      console.error("Error deleting Alkes:", error.message);
+      console.error("Error deleting Sale:", error.message);
       setLoading(false);
     }
   };
@@ -25,7 +26,11 @@ const FormConfirmation = ({ setOpenModal, id, fetchData }) => {
         <button onClick={() => setOpenModal(false)} className="w-16 btn">
           Tidak
         </button>
-        <button onClick={handleDelete} className="w-16 btn btn-primary">
+        <button
+          onClick={handleDelete}
+          className="w-16 btn btn-primary"
+          disabled={isLoading}
+        >
           {isLoading ? <Loading size="sm" /> : "Ya"}
         </button>
       </div>
@@ -33,4 +38,4 @@ const FormConfirmation = ({ setOpenModal, id, fetchData }) => {
   );
 };
 
-export default FormConfirmation;
+export default FormDeleteSales;
