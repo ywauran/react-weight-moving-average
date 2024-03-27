@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { getSalesByAlkesId } from "../../service/sales";
 import Modal from "../../components/modal/modal";
 import FormCreateSales from "../../components/form/form-create-sales";
+import TableSkeleton from "../../components/skeleton/table";
 
 const DetailAlkes = () => {
   const { id } = useParams();
@@ -54,8 +55,7 @@ const DetailAlkes = () => {
         </Link>
       </div>
       <div className="overflow-x-auto shadow">
-        <table className="table">
-          {/* head */}
+        <table className="table text-center">
           <thead>
             <tr>
               <th>No</th>

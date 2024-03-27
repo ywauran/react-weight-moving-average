@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .active {
-  @apply text-white bg-gray-700;
+  @apply border-b-[4px] font-semibold;
 }
 
 .label {

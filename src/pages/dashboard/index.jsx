@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Layout from "../../layout";
+import WMACalculator from "../wma";
 
 const Dashboard = () => {
   // Dummy data for the table
@@ -13,6 +14,7 @@ const Dashboard = () => {
   return (
     <Layout>
       <h1 className="mb-8 text-3xl font-bold">Dashboard</h1>
+      <WMACalculator />
       <div className="overflow-x-auto shadow">
         <table className="table">
           {/* head */}

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { updateAlkes, getAlkesById } from "../../service/alkes";
+import Loading from "../loading";
 
-const FormUpdateAlkes = ({ setData, data, setOpenModal, id }) => {
+const FormUpdateAlkes = ({ fetchData, setOpenModal, id }) => {
   const [newAlkes, setNewAlkes] = useState({
     name: "",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -33,14 +35,15 @@ const FormUpdateAlkes = ({ setData, data, setOpenModal, id }) => {
   };
 
   const handleUpdate = async () => {
+    setIsLoading(true);
     try {
       await updateAlkes(id, newAlkes);
-      setData(
-        data.map((alkesItem) => (alkesItem.id === id ? newAlkes : alkesItem))
-      );
+      fetchData();
+      setIsLoading(false);
       setOpenModal(false);
     } catch (error) {
       console.error("Error updating Alkes:", error.message);
+      setIsLoading(false);
     }
   };
 
@@ -64,7 +67,7 @@ const FormUpdateAlkes = ({ setData, data, setOpenModal, id }) => {
           Tidak
         </button>
         <button onClick={handleUpdate} className="w-16 btn btn-primary">
-          Ya
+          {isLoading ? <Loading size="sm" /> : "Ya"}
         </button>
       </div>
     </>

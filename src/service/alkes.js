@@ -9,6 +9,8 @@ import {
   deleteDoc,
   query,
   orderBy,
+  startAfter,
+  limit,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
@@ -29,13 +31,12 @@ export async function createAlkes(data) {
 }
 
 // Read operation
-export async function getAllAlkes(sortByCreatedAt = false) {
+export async function getAllAlkes(pageSize, startAfterDoc) {
   try {
     let alkesQuery = alkesRef;
 
-    if (sortByCreatedAt) {
-      alkesQuery = query(alkesRef, orderBy("createdAt"));
-    }
+    // Sorting by createdAt in descending order
+    alkesQuery = query(alkesRef, orderBy("createdAt", "desc"));
 
     const snapshot = await getDocs(alkesQuery);
     const alkes = [];

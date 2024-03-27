@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import { createAlkes } from "../../service/alkes";
+import Loading from "../loading";
 
-const FormCreateAlkes = ({ setData, data, setOpenModal }) => {
+const FormCreateAlkes = ({ fetchData, setOpenModal }) => {
   const [newAlkes, setNewAlkes] = useState({
     name: "",
-    createdAt: new Date().toISOString(), // Set createdAt to current time
-    updatedAt: new Date().toISOString(), // Set updatedAt to current time
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
+  const [isLoading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewAlkes((prevAlkes) => ({
       ...prevAlkes,
       [name]: value,
-      updatedAt: new Date().toISOString(), // Update updatedAt on change
+      updatedAt: new Date().toISOString(),
     }));
   };
 
   const handleCreate = async () => {
+    setLoading(true);
     try {
       const createdAlkes = await createAlkes(newAlkes);
-      setData([...data, createdAlkes]);
-      setOpenModal(false); // Close modal on successful creation
+      fetchData();
+      setOpenModal(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error creating Alkes:", error.message);
+      setLoading(false);
     }
   };
 
@@ -47,7 +52,7 @@ const FormCreateAlkes = ({ setData, data, setOpenModal }) => {
           Tidak
         </button>
         <button onClick={handleCreate} className="w-16 btn btn-primary">
-          Ya
+          {isLoading ? <Loading size="sm" /> : "Ya"}
         </button>
       </div>
     </>

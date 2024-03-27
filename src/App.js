@@ -18,10 +18,6 @@ function App() {
       element: <Login />,
     },
     {
-      path: "/dashboard",
-      element: <Dashboard />,
-    },
-    {
       path: "/alkes",
       element: <Alkes />,
     },

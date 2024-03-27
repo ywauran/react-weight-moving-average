@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const LineChart = () => {
-  const [chartData, setChartData] = useState({
+const LineChart = ({ actual, wma }) => {
+  const chartData = {
     series: [
       {
         name: "Penjualan Aktual",
-        data: [28, 29, 33, 36, 32, 32, 33],
+        data: actual,
       },
       {
         name: "Penjualan Weight Moving Average",
-        data: [12, 11, 14, 18, 17, 13, 13],
+        data: wma,
       },
     ],
     options: {
@@ -71,7 +71,7 @@ const LineChart = () => {
         offsetX: -5,
       },
     },
-  });
+  };
 
   return (
     <div className="p-10">
