@@ -26,7 +26,6 @@ const CalculateAlkes = () => {
   const fetchSalesByAlkesId = async () => {
     try {
       const sales = await getSalesByAlkesId(id);
-      console.log(sales);
       setSales(sales);
     } catch (error) {
       console.error("Error fetching sales:", error);
@@ -111,23 +110,6 @@ const CalculateAlkes = () => {
       </div>
       <div className="mt-8">
         <LineChart actual={actual} wma={wma} />
-      </div>
-      {/* Proses perhitungan ditambahkan di bawah ini */}
-      <div className="mt-8">
-        <h2>Proses Perhitungan Weighted Moving Average (WMA)</h2>
-        <ol>
-          {sales.map((_, index) => (
-            <li key={index}>
-              Minggu ke-{index + 1}:{" "}
-              {index >= period - 1
-                ? `(${sales
-                    .slice(index - period + 1, index + 1)
-                    .map((item) => item.salesAmount)
-                    .join(" + ")}) * (3 + 2 + 1) / 6 = ${wma[index]}`
-                : "Belum dapat dihitung"}
-            </li>
-          ))}
-        </ol>
       </div>
     </Layout>
   );

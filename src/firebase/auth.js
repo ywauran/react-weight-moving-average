@@ -12,7 +12,28 @@ export const doCreateUserWithEmailAndPassword = async (email, password) => {
 };
 
 export const doSignInWithEmailAndPassword = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password);
+  return signInWithEmailAndPassword(auth, email, password).catch((error) => {
+    let errorMessage = "";
+    console.log(error.code);
+    switch (error.code) {
+      case "auth/invalid-credential":
+        errorMessage = "Email tidak valid. Coba lagi.";
+        break;
+      case "auth/user-not-found":
+        errorMessage = "Pengguna tidak ditemukan. Cek kembali email Anda.";
+        break;
+      case "auth/wrong-password":
+        errorMessage = "Kata sandi salah. Coba lagi.";
+        break;
+      case "auth/invalid-email":
+        errorMessage = "Email tidak valid. Coba lagi.";
+        break;
+      default:
+        errorMessage = "Gagal masuk. Silahkan coba lagi .";
+        break;
+    }
+    throw new Error(errorMessage);
+  });
 };
 
 export const doSignOut = () => {

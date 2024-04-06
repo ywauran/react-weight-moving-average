@@ -31,19 +31,34 @@ export async function createAlkes(data) {
 }
 
 // Read operation
-export async function getAllAlkes(pageSize, startAfterDoc) {
+export async function getAllAlkes(pageSize = 5, startAfterDoc = null) {
   try {
     let alkesQuery = alkesRef;
 
-    // Sorting by createdAt in descending order
-    alkesQuery = query(alkesRef, orderBy("createdAt", "desc"));
+    // Apply ordering
+    alkesQuery = query(alkesRef, orderBy("createdAt", "desc"), limit(pageSize));
+
+    // If there's a starting document, adjust the query to start after it
+    if (startAfterDoc) {
+      alkesQuery = query(alkesQuery, startAfter(startAfterDoc));
+    }
 
     const snapshot = await getDocs(alkesQuery);
     const alkes = [];
+    let lastVisible = null;
+
+    // Get last visible document for pagination
+    if (!snapshot.empty) {
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
+    }
+
     snapshot.forEach((doc) => {
       alkes.push({ id: doc.id, ...doc.data() });
     });
-    return alkes;
+
+    console.log(alkes, lastVisible);
+
+    return { alkes, lastVisible };
   } catch (error) {
     throw error;
   }
