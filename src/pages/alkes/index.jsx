@@ -6,7 +6,6 @@ import FormCreateAlkes from "../../components/form/form-create-alkes";
 import FormUpdateAlkes from "../../components/form/form-update-alkes";
 import FormDeleteAlkes from "../../components/form/form-delete-alkes";
 import { getAllAlkes } from "../../service/alkes";
-import TableSkeleton from "../../components/skeleton/table";
 
 const PAGE_SIZE = 5;
 
@@ -17,53 +16,37 @@ const Alkes = () => {
   const [isModalUpdate, setIsModalUpdate] = useState(false);
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [id, setId] = useState(null);
-  const [docSnapshots, setDocSnapshots] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [canGoPrev, setCanGoPrev] = useState(false);
-  const [canGoNext, setCanGoNext] = useState(true);
 
   useEffect(() => {
     fetchAlkes();
-  }, []);
+  }, [currentPage]); // Trigger fetchAlkes on page change
 
-  const fetchAlkes = async (forward = true) => {
+  const fetchAlkes = async () => {
     setIsLoading(true);
     try {
-      // Determine the startAfterDoc based on the direction of navigation
-      const startAfterDoc = forward
-        ? docSnapshots[docSnapshots.length - 1] || null
-        : docSnapshots[docSnapshots.length - 3] || null; // Go two steps back for backward navigation
-
-      const response = await getAllAlkes(PAGE_SIZE, startAfterDoc);
+      const response = await getAllAlkes();
       setData(response.alkes);
       setIsLoading(false);
-
-      // Update docSnapshots stack based on navigation direction
-      if (response.alkes.length > 0) {
-        if (forward) {
-          setDocSnapshots([...docSnapshots, response.lastVisible]);
-        } else {
-          setDocSnapshots(docSnapshots.slice(0, -1));
-        }
-      }
-
-      setCanGoNext(!!response.alkes.length);
-      setCanGoPrev(docSnapshots.length > 1); // Enable "Previous" if there are snapshots to go back to
     } catch (error) {
       console.error("Error fetching Alkes:", error);
       setIsLoading(false);
     }
   };
 
+  const totalPages = Math.ceil(data.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, data.length);
+  const currentData = data.slice(startIndex, endIndex);
+  const canGoPrev = currentPage > 1;
+  const canGoNext = currentPage < totalPages;
+
   const handleNextPage = () => {
-    fetchAlkes(true);
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
   const handlePrevPage = () => {
-    if (docSnapshots.length > 1) {
-      // Ensure there's a previous page to go back to
-      fetchAlkes(false);
-    }
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   return (
@@ -135,9 +118,9 @@ const Alkes = () => {
                   <td colSpan="3">Loading...</td>
                 </tr>
               ) : (
-                data.map((alkesItem, index) => (
+                currentData.map((alkesItem, index) => (
                   <tr key={alkesItem.id}>
-                    <th>{(currentPage - 1) * PAGE_SIZE + index + 1}</th>
+                    <th>{startIndex + index + 1}</th>
 
                     <td className="font-semibold">{alkesItem.name}</td>
                     <td className="flex items-center justify-center space-x-4">
@@ -169,12 +152,46 @@ const Alkes = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-between mt-4">
-          <button className="btn" onClick={handlePrevPage}>
-            Previous
+        <div className="flex justify-end mt-4 space-x-4">
+          <button
+            className="btn"
+            onClick={handlePrevPage}
+            disabled={!canGoPrev}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
           </button>
-          <button className="btn" onClick={handleNextPage}>
-            Next
+          <button
+            className="btn"
+            onClick={handleNextPage}
+            disabled={!canGoNext}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m8.25 4.5 7.5 7.5-7.5 7.5"
+              />
+            </svg>
           </button>
         </div>
       </>

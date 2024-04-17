@@ -4,71 +4,47 @@ import { useParams } from "react-router-dom";
 import LineChart from "../../components/chart/line-chart";
 import { getAlkesById } from "../../service/alkes";
 import { getSalesByAlkesId } from "../../service/sales";
+import calculateWMA from "../../service/wma";
 
 const CalculateAlkes = () => {
   const { id } = useParams();
-  const [period, setPeriod] = useState(3);
-
-  const [sales, setSales] = useState([]); // Mengubah periode menjadi 3
-  const [wma, setWma] = useState(Array(sales?.length).fill(0));
-  const [actual, setActual] = useState([]);
+  const [period, setPeriod] = useState(3); // Start with default value satisfying the new condition
+  const [sales, setSales] = useState([]);
+  const [wma, setWma] = useState([]);
   const [alkes, setAlkes] = useState({});
 
-  const fetchAlkes = async () => {
-    try {
-      const alkes = await getAlkesById(id);
-      setAlkes(alkes);
-    } catch (error) {
-      console.error("Error fetching alkes:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedAlkes = await getAlkesById(id);
+        setAlkes(fetchedAlkes);
+        const fetchedSales = await getSalesByAlkesId(id);
+        setSales(fetchedSales);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const fetchSalesByAlkesId = async () => {
-    try {
-      const sales = await getSalesByAlkesId(id);
-      setSales(sales);
-    } catch (error) {
-      console.error("Error fetching sales:", error);
-    }
-  };
-
-  const calculateWMA = (startIndex) => {
-    let sum = 0;
-    let weightSum = 0;
-    let weight = period;
-
-    for (let i = 0; i < period; i++) {
-      sum += sales[startIndex + i].salesAmount * weight;
-      weightSum += weight;
-      weight--;
-    }
-
-    return sum / weightSum;
-  };
+    fetchData();
+  }, [id]);
 
   useEffect(() => {
-    if (period > 0) {
-      const calculatedWma = [];
-      for (let i = 0; i < sales.length; i++) {
-        if (i >= period - 1) {
-          calculatedWma.push(calculateWMA(i - period + 1).toFixed(2));
-        } else {
-          calculatedWma.push(0);
-        }
-      }
-      setWma(calculatedWma);
+    if (sales.length > 0 && period > 2 && period <= sales.length) {
+      setWma(calculateWMA(sales, period));
     }
   }, [sales, period]);
 
-  useEffect(() => {
-    const actualData = sales.map((item) => item.salesAmount);
-    setActual(actualData);
-  }, [sales]);
-
-  useEffect(() => {
-    fetchAlkes();
-    fetchSalesByAlkesId();
-  }, [id]);
+  const handlePeriodChange = (e) => {
+    const newPeriod = parseInt(e.target.value, 10);
+    // Check the new period against the conditions before setting it
+    if (newPeriod > 2 && newPeriod <= sales.length) {
+      setPeriod(newPeriod);
+    } else {
+      alert(
+        "Periode harus lebih dari 2 dan kurang dari panjang data penjualan - 1"
+      );
+    }
+  };
 
   return (
     <Layout>
@@ -83,7 +59,9 @@ const CalculateAlkes = () => {
           id="period"
           className="input input-bordered"
           value={period}
-          onChange={(e) => setPeriod(parseInt(e.target.value))}
+          onChange={handlePeriodChange}
+          min="3"
+          max={sales.length}
         />
       </div>
       <div className="overflow-x-auto shadow">
@@ -97,19 +75,19 @@ const CalculateAlkes = () => {
             </tr>
           </thead>
           <tbody>
-            {sales.map((alkes, index) => (
-              <tr key={alkes.id}>
+            {sales.map((sale, index) => (
+              <tr key={sale.id}>
                 <td>{index + 1}</td>
                 <td>Minggu Ke-{index + 1}</td>
-                <td>{alkes.salesAmount}</td>
-                <td>{wma[index]}</td>
+                <td>{sale.salesAmount}</td>
+                <td>{wma.length > index ? wma[index] : "N/A"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <div className="mt-8">
-        <LineChart actual={actual} wma={wma} />
+        <LineChart actual={sales.map((sale) => sale.salesAmount)} wma={wma} />
       </div>
     </Layout>
   );

@@ -1,5 +1,4 @@
 import {
-  getFirestore,
   collection,
   addDoc,
   getDocs,
@@ -9,8 +8,6 @@ import {
   deleteDoc,
   query,
   orderBy,
-  startAfter,
-  limit,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
@@ -31,35 +28,29 @@ export async function createAlkes(data) {
 }
 
 // Read operation
-export async function getAllAlkes(pageSize = 5, startAfterDoc = null) {
+export async function getAllAlkes() {
   try {
-    let alkesQuery = alkesRef;
-
-    // Apply ordering
-    alkesQuery = query(alkesRef, orderBy("createdAt", "desc"), limit(pageSize));
-
-    // If there's a starting document, adjust the query to start after it
-    if (startAfterDoc) {
-      alkesQuery = query(alkesQuery, startAfter(startAfterDoc));
-    }
+    // Pastikan alkesRef telah didefinisikan di tempat lain dalam kode.
+    const alkesQuery = query(alkesRef, orderBy("createdAt", "desc"));
 
     const snapshot = await getDocs(alkesQuery);
     const alkes = [];
     let lastVisible = null;
 
-    // Get last visible document for pagination
     if (!snapshot.empty) {
+      snapshot.forEach((doc) => {
+        alkes.push({ id: doc.id, ...doc.data() });
+      });
       lastVisible = snapshot.docs[snapshot.docs.length - 1];
+    } else {
+      console.log("Tidak ada data alat kesehatan yang ditemukan.");
     }
-
-    snapshot.forEach((doc) => {
-      alkes.push({ id: doc.id, ...doc.data() });
-    });
 
     console.log(alkes, lastVisible);
 
     return { alkes, lastVisible };
   } catch (error) {
+    // Tambahkan penanganan kesalahan tambahan di sini jika diperlukan.
     throw error;
   }
 }

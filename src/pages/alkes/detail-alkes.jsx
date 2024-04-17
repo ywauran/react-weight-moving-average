@@ -7,7 +7,6 @@ import Modal from "../../components/modal/modal";
 import FormCreateSales from "../../components/form/form-create-sales";
 import FormUpdateSales from "../../components/form/form-update-sales";
 import FormDeleteSales from "../../components/form/form-delete-sales";
-import TableSkeleton from "../../components/skeleton/table";
 
 const DetailAlkes = () => {
   const { id } = useParams();
@@ -17,6 +16,8 @@ const DetailAlkes = () => {
   const [sales, setSales] = useState([]);
   const [idSales, setIdSales] = useState(null);
   const [alkes, setAlkes] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
   const fetchAlkes = async () => {
     try {
@@ -40,6 +41,19 @@ const DetailAlkes = () => {
     fetchSalesByAlkesId();
     fetchAlkes();
   }, [id]);
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, sales.length);
+  const currentSales = sales.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(sales.length / pageSize);
 
   return (
     <Layout>
@@ -84,6 +98,7 @@ const DetailAlkes = () => {
           />
         </Modal>
       )}
+
       <h1 className="mb-8 text-3xl font-bold">{alkes?.name}</h1>
       <div className="flex items-center justify-between mb-8">
         <button
@@ -92,9 +107,11 @@ const DetailAlkes = () => {
         >
           Tambah
         </button>
-        <Link to={`/alkes/calculate/${id}`} className="btn">
-          Lihat Perhitungan
-        </Link>
+        {sales.length > 3 && (
+          <Link to={`/alkes/calculate/${id}`} className="btn">
+            Lihat Perhitungan
+          </Link>
+        )}
       </div>
       <div className="overflow-x-auto shadow">
         <table className="table text-center">
@@ -106,9 +123,9 @@ const DetailAlkes = () => {
             </tr>
           </thead>
           <tbody>
-            {sales.map((sale, index) => (
+            {currentSales.map((sale, index) => (
               <tr key={sale.id}>
-                <th>{index + 1}</th>
+                <th>{startIndex + index + 1}</th>
                 <td>{sale.salesAmount}</td>
                 <td className="flex items-center justify-center space-x-4">
                   <button
@@ -134,6 +151,48 @@ const DetailAlkes = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-end mt-4 space-x-4">
+        <button
+          className="btn"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 19.5 8.25 12l7.5-7.5"
+            />
+          </svg>
+        </button>
+        <button
+          className="btn"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </button>
       </div>
     </Layout>
   );
