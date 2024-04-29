@@ -26,7 +26,6 @@ export async function createAlkes(data) {
 }
 
 // Read operation
-// Read operation
 export async function getAllAlkes() {
   try {
     // Ensure alkesRef has been defined elsewhere in the code.
