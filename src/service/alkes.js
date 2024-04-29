@@ -13,25 +13,24 @@ import { db } from "../firebase/firebase";
 
 const alkesRef = collection(db, "alkes");
 
-// Create operation
 export async function createAlkes(data) {
   try {
-    // Menambahkan dokumen ke koleksi alkesRef dengan data yang diberikan
-    const docRef = await addDoc(alkesRef, data);
-
-    // Mengembalikan ID dokumen yang dibuat oleh Firestore
+    const docRef = await addDoc(alkesRef, {
+      ...data,
+      createdAt: new Date().toISOString(),
+    });
     return docRef.id;
   } catch (error) {
-    // Melempar kembali error jika terjadi kesalahan
     throw error;
   }
 }
 
 // Read operation
+// Read operation
 export async function getAllAlkes() {
   try {
-    // Pastikan alkesRef telah didefinisikan di tempat lain dalam kode.
-    const alkesQuery = query(alkesRef, orderBy("createdAt", "desc"));
+    // Ensure alkesRef has been defined elsewhere in the code.
+    const alkesQuery = query(alkesRef, orderBy("createdAt", "desc")); // Order by createdAt field in descending order
 
     const snapshot = await getDocs(alkesQuery);
     const alkes = [];
@@ -50,7 +49,7 @@ export async function getAllAlkes() {
 
     return { alkes, lastVisible };
   } catch (error) {
-    // Tambahkan penanganan kesalahan tambahan di sini jika diperlukan.
+    // Add additional error handling here if needed.
     throw error;
   }
 }

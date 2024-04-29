@@ -5,7 +5,6 @@ import Loading from "../loading";
 const FormCreateSales = ({ fetchData, setOpenModal, id }) => {
   const [newSale, setNewSale] = useState({
     salesAmount: 0,
-    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
   const [isLoading, setIsLoading] = useState(false);

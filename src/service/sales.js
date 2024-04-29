@@ -19,7 +19,7 @@ const salesRef = collection(db, "sales");
 export async function createSale(data, alkesId) {
   try {
     // Add the alkes ID or reference to the sale data
-    const saleData = { ...data, alkesId }; // Assuming alkesId is the field name for the foreign key
+    const saleData = { ...data, alkesId, createdAt: new Date().toISOString() }; // Assuming alkesId is the field name for the foreign key
 
     // Add a new document to the 'sales' collection with the modified data
     const docRef = await addDoc(salesRef, saleData);
@@ -75,7 +75,12 @@ export async function getSalesByAlkesId(alkesId) {
     snapshot.forEach((doc) => {
       sales.push({ id: doc.id, ...doc.data() });
     });
-    return sales;
+
+    //sort by createdAt
+    const sortedSales = sales.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    return sortedSales;
   } catch (error) {
     throw error;
   }
