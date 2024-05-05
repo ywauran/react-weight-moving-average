@@ -1,5 +1,4 @@
 import Login from "./components/auth/login";
-import Dashboard from "./pages/dashboard";
 import { AuthProvider } from "./contexts/authContext";
 import { useRoutes } from "react-router-dom";
 import NotFound from "./pages/404";

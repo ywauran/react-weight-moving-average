@@ -25,11 +25,14 @@ export async function createAlkes(data) {
   }
 }
 
-// Read operation
+export const getData = async () => {
+  try {
+    const response = await getDocs();
+  } catch (error) {}
+};
 export async function getAllAlkes() {
   try {
-    // Ensure alkesRef has been defined elsewhere in the code.
-    const alkesQuery = query(alkesRef, orderBy("createdAt", "desc")); // Order by createdAt field in descending order
+    const alkesQuery = query(alkesRef, orderBy("createdAt", "desc"));
 
     const snapshot = await getDocs(alkesQuery);
     const alkes = [];
@@ -48,7 +51,6 @@ export async function getAllAlkes() {
 
     return { alkes, lastVisible };
   } catch (error) {
-    // Add additional error handling here if needed.
     throw error;
   }
 }
@@ -66,7 +68,6 @@ export async function getAlkesById(id) {
   }
 }
 
-// Update operation
 export async function updateAlkes(id, data) {
   try {
     await updateDoc(doc(alkesRef, id), data);
@@ -75,7 +76,6 @@ export async function updateAlkes(id, data) {
   }
 }
 
-// Delete operation
 export async function deleteAlkes(id) {
   try {
     await deleteDoc(doc(alkesRef, id));
@@ -83,3 +83,27 @@ export async function deleteAlkes(id) {
     throw error;
   }
 }
+
+// export const getData = async (restaurantId: string, page: number = 1) => {
+//   const pageSize = 5;
+//   let result = [];
+//   let error;
+
+//   try {
+//     const response = await db
+//       .collection("/ratings")
+//       .where("restaurantId", "==", restaurantId)
+//       .orderBy("ratedAt", "==", "desc")
+//       // only show 5 results per fetch
+//       .limit(pageSize)
+//       // on the first page, offset by 0 (= show latest 5 results)
+//       // then, for each next page, jump forward by 5 (= page size)
+//       .offset(pageSize * (page - 1))
+//       .get()
+//     response.docs.map(doc => result.push(doc.data()))
+//   } catch (e) {
+//     error = e as Error;
+//     // handle error
+//   }
+//   return { error, result }
+// }

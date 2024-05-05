@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <Sidebar />
-      <main className="w-full p-10 md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all">
+      <main className="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all">
         {children}
       </main>
     </>

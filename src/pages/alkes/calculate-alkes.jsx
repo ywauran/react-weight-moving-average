@@ -12,7 +12,8 @@ const CalculateAlkes = () => {
   const [sales, setSales] = useState([]);
   const [wma, setWma] = useState([]);
   const [alkes, setAlkes] = useState({});
-  const [wmaSteps, setWmaSteps] = useState([]);
+  const [currentPageWMA, setCurrentPageWMA] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +24,7 @@ const CalculateAlkes = () => {
         setSales(fetchedSales);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Tambahkan penanganan kesalahan di sini jika diperlukan
+        // Handle errors here if needed
       }
     };
 
@@ -31,33 +32,14 @@ const CalculateAlkes = () => {
   }, [id]);
 
   useEffect(() => {
-    if (sales.length > 0 && period > 2 && period <= sales.length) {
-      const calculatedWMA = calculateWMA(sales, period);
-      setWma(calculatedWMA);
-
-      // Perhitungan langkah-langkah WMA
-      const steps = sales.map((sale, index) => {
-        const weights = Array.from({ length: period }, (_, i) => period - i);
-        const weightedSales = sales
-          .slice(index, index + period)
-          .map((s, i) => s.salesAmount * weights[i]);
-        const totalWeight = weights.reduce((acc, curr) => acc + curr, 0);
-        const totalWeightedSales = weightedSales.reduce(
-          (acc, curr) => acc + curr,
-          0
-        );
-        return {
-          week: index + 1,
-          previousSales: index > 0 ? sales[index - 1].salesAmount : "N/A",
-          weights,
-          weightedSales,
-          totalWeight,
-          totalWeightedSales,
-          wma: index >= period - 1 ? calculatedWMA[index] : "N/A",
-        };
-      });
-      setWmaSteps(steps);
+    if (sales.length === 0 || period <= 2 || period > sales.length) {
+      return;
     }
+
+    const reversedSales = [...sales].reverse();
+    const calculatedWMA = calculateWMA(reversedSales, period);
+    const reversedCalculatedWMA = [...calculatedWMA].reverse();
+    setWma(reversedCalculatedWMA);
   }, [sales, period]);
 
   const handlePeriodChange = (e) => {
@@ -65,97 +47,93 @@ const CalculateAlkes = () => {
     if (newPeriod > 2 && newPeriod <= sales.length) {
       setPeriod(newPeriod);
     } else {
-      // Ubah cara menampilkan pesan kesalahan
-      alert(`Periode harus lebih dari 2 dan kurang dari ${sales.length}`);
+      alert(`Period must be greater than 2 and less than ${sales.length}`);
     }
   };
 
+  const paginateWMA = (pageNumber) => setCurrentPageWMA(pageNumber);
+
+  const totalWMAPages = Math.ceil(wma.length / itemsPerPage);
+
+  const indexOfLastItemWMA = currentPageWMA * itemsPerPage;
+  const indexOfFirstItemWMA = indexOfLastItemWMA - itemsPerPage;
+  const currentWMA = wma.slice(indexOfFirstItemWMA, indexOfLastItemWMA);
+
   return (
     <Layout>
-      <h1 className="mb-8 text-3xl font-bold">Perhitungan {alkes?.name}</h1>
-      <div className="mb-8">
-        <label htmlFor="period" className="label">
-          Jumlah Periode (Mingguan)
-        </label>
-        <input
-          type="number"
-          name="period"
-          id="period"
-          className="input input-bordered"
-          value={period}
-          onChange={handlePeriodChange}
-          min="3"
-          max={sales.length}
-        />
-      </div>
-      <div className="overflow-x-auto shadow">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Minggu Ke-</th>
-              <th>Penjualan</th>
-              <th>Weight Moving Average</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((sale, index) => (
-              <tr key={sale.id}>
-                <td>{index + 1}</td>
-                <td>Minggu Ke-{index + 1}</td>
-                <td>{sale.salesAmount}</td>
-                <td>{wma.length > index ? wma[index] : "N/A"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-8">
-        <LineChart actual={sales.map((sale) => sale.salesAmount)} wma={wma} />
-      </div>
-      {wmaSteps.length > 0 && (
-        <div className="mt-8">
-          <h2 className="mb-4 text-xl font-bold">
-            Langkah-langkah Perhitungan WMA
-          </h2>
-          <div className="overflow-x-auto shadow">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Minggu</th>
-                  <th>Penjualan Sebelumnya</th>
-                  <th>Bobot</th>
-                  <th>Penjualan x Bobot</th>
-                  <th>Total Bobot</th>
-                  <th>Total Penjualan yang Dibobotkan</th>
-                  <th>Detail Sebelum Hasil</th>
-                  <th>WMA</th>
-                </tr>
-              </thead>
-              <tbody>
-                {wmaSteps?.map((step) => (
-                  <tr key={step.week}>
-                    <td>{step.week}</td>
-                    <td>{step.previousSales}</td>
-                    <td>{step.weights.join(", ")}</td>
-                    <td>{step.weightedSales.join(", ")}</td>
-                    <td>{step.totalWeight}</td>
-                    <td>{step.totalWeightedSales}</td>
-                    <td>
-                      {step?.week >= period
-                        ? `=((${step?.weightedSales?.join("+")})/${
-                            step?.totalWeight
-                          })`
-                        : "N/A"}
-                    </td>
-                    <td>{step.wma}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="p-10 bg-gray-50">
+        <h1 className="p-10 mb-8 text-3xl font-bold">
+          Calculation for {alkes?.name}
+        </h1>
+        <div className="mb-8">
+          <label htmlFor="period" className="label">
+            Number of Periods (Weekly)
+          </label>
+          <input
+            type="number"
+            name="period"
+            id="period"
+            className="input input-bordered"
+            value={period}
+            onChange={handlePeriodChange}
+            min="3"
+            max={sales.length}
+          />
         </div>
-      )}
+        <div className="overflow-x-auto shadow">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Week</th>
+                <th>Sales</th>
+                <th>Weights</th>
+                <th>Total Weight</th>
+                <th>WMA Detail</th>
+                <th>Weighted Moving Average</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentWMA.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>Week {item.index + 2}</td>
+                  <td>{item.salesAmount}</td>
+                  <td>{item?.periods?.join(", ")}</td>
+                  <td>{item.totalPeriod}</td>
+                  <td>{item.wmaString}</td>
+                  <td>{item.wma}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex items-center justify-end my-4 space-x-4">
+          <button
+            onClick={() =>
+              paginateWMA(currentPageWMA > 1 ? currentPageWMA - 1 : 1)
+            }
+            disabled={currentPageWMA === 1}
+            className="btn"
+          >
+            &#8592; Prev
+          </button>
+          <span>{currentPageWMA}</span>
+          <button
+            onClick={() =>
+              paginateWMA(
+                currentPageWMA < totalWMAPages
+                  ? currentPageWMA + 1
+                  : totalWMAPages
+              )
+            }
+            disabled={currentPageWMA === totalWMAPages}
+            className="btn"
+          >
+            Next &#8594;
+          </button>
+        </div>
+      </div>
     </Layout>
   );
 };

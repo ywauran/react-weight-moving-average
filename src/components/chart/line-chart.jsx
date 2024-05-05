@@ -2,6 +2,10 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LineChart = ({ actual, wma }) => {
+  // Pastikan data aktual memiliki satu elemen kurang dari data WMA
+  if (actual.length >= wma.length) {
+    actual = actual.slice(0, wma.length - 1);
+  }
   const chartData = {
     series: [
       {
@@ -51,17 +55,20 @@ const LineChart = ({ actual, wma }) => {
         size: 1,
       },
       xaxis: {
-        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+        categories: Array.from(
+          { length: Math.max(actual.length, wma.length) },
+          (_, i) => i + 1
+        ),
         title: {
-          text: "Month",
+          text: "Week",
         },
       },
       yaxis: {
         title: {
           text: "Jumlah Penjualan",
         },
-        min: 5,
-        max: 40,
+        min: Math.min(...actual.concat(wma)) - 5,
+        max: Math.max(...actual.concat(wma)) + 5,
       },
       legend: {
         position: "top",
@@ -74,7 +81,7 @@ const LineChart = ({ actual, wma }) => {
   };
 
   return (
-    <div className="p-10">
+    <div className="p-10 overflow-scroll">
       <div id="chart">
         <ReactApexChart
           options={chartData.options}

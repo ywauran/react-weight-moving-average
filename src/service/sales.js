@@ -1,5 +1,4 @@
 import {
-  getFirestore,
   collection,
   addDoc,
   getDocs,
@@ -15,24 +14,18 @@ import { db } from "../firebase/firebase";
 
 const salesRef = collection(db, "sales");
 
-// Create operation with foreign key reference to alkes
 export async function createSale(data, alkesId) {
   try {
-    // Add the alkes ID or reference to the sale data
-    const saleData = { ...data, alkesId, createdAt: new Date().toISOString() }; // Assuming alkesId is the field name for the foreign key
+    const saleData = { ...data, alkesId, createdAt: new Date().toISOString() };
 
-    // Add a new document to the 'sales' collection with the modified data
     const docRef = await addDoc(salesRef, saleData);
 
-    // Return the ID of the newly created document
     return docRef.id;
   } catch (error) {
-    // Throw an error if something goes wrong
     throw error;
   }
 }
 
-// Read operation: Get all sales or get sales sorted by date
 export async function getAllSales(sortByDate = false) {
   try {
     let salesQuery = salesRef;
@@ -52,7 +45,6 @@ export async function getAllSales(sortByDate = false) {
   }
 }
 
-// Read operation: Get sale by ID
 export async function getSaleById(id) {
   try {
     const docSnap = await getDoc(doc(salesRef, id));
@@ -66,7 +58,6 @@ export async function getSaleById(id) {
   }
 }
 
-// Read operation: Get sales by alkes ID
 export async function getSalesByAlkesId(alkesId) {
   try {
     const salesQuery = query(salesRef, where("alkesId", "==", alkesId));
@@ -76,7 +67,6 @@ export async function getSalesByAlkesId(alkesId) {
       sales.push({ id: doc.id, ...doc.data() });
     });
 
-    //sort by createdAt
     const sortedSales = sales.sort((a, b) => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
@@ -86,7 +76,6 @@ export async function getSalesByAlkesId(alkesId) {
   }
 }
 
-// Update operation
 export async function updateSale(id, data) {
   try {
     await updateDoc(doc(salesRef, id), data);
@@ -95,7 +84,6 @@ export async function updateSale(id, data) {
   }
 }
 
-// Delete operation
 export async function deleteSale(id) {
   try {
     await deleteDoc(doc(salesRef, id));
