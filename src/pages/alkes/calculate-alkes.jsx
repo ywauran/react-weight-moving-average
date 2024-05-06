@@ -13,7 +13,7 @@ const CalculateAlkes = () => {
   const [wma, setWma] = useState([]);
   const [alkes, setAlkes] = useState({});
   const [currentPageWMA, setCurrentPageWMA] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 15;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,12 +62,10 @@ const CalculateAlkes = () => {
   return (
     <Layout>
       <div className="p-10 bg-gray-50">
-        <h1 className="p-10 mb-8 text-3xl font-bold">
-          Calculation for {alkes?.name}
-        </h1>
+        <h1 className="mb-8 text-3xl font-bold">Perhitungan {alkes?.name}</h1>
         <div className="mb-8">
           <label htmlFor="period" className="label">
-            Number of Periods (Weekly)
+            Periode
           </label>
           <input
             type="number"

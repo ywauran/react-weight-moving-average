@@ -59,6 +59,7 @@ const FormUpdateSale = ({ fetchData, setOpenModal, id }) => {
           className="w-full input input-bordered"
           value={newSale.salesAmount}
           onChange={handleChange}
+          min="0"
         />
       </div>
       <div className="flex justify-end pt-2 space-x-4">
