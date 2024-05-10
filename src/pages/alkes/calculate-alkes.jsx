@@ -5,6 +5,7 @@ import LineChart from "../../components/chart/line-chart";
 import { getAlkesById } from "../../service/alkes";
 import { getSalesByAlkesId } from "../../service/sales";
 import calculateWMA from "../../service/wma";
+import { calculateMSE } from "../../service/mse";
 
 const CalculateAlkes = () => {
   const { id } = useParams();
@@ -15,6 +16,24 @@ const CalculateAlkes = () => {
   const [currentPageWMA, setCurrentPageWMA] = useState(1);
   const itemsPerPage = 15;
 
+  const [mse, setMse] = useState(null);
+
+  useEffect(() => {
+    if (wma.length > 0 && sales.length > 0) {
+      const actualSales = sales.map((sale) => {
+        const value = Number(sale.salesAmount);
+        return isNaN(value) ? 0 : value;
+      });
+
+      const predictedWMA = wma.map((item) => {
+        const value = Number(item.wma);
+        return isNaN(value) ? 0 : value;
+      });
+      const newMse = calculateMSE(actualSales, predictedWMA);
+      setMse(newMse);
+    }
+  }, [sales, wma]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +43,6 @@ const CalculateAlkes = () => {
         setSales(fetchedSales);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Handle errors here if needed
       }
     };
 
@@ -59,6 +77,9 @@ const CalculateAlkes = () => {
   const indexOfFirstItemWMA = indexOfLastItemWMA - itemsPerPage;
   const currentWMA = wma.slice(indexOfFirstItemWMA, indexOfLastItemWMA);
 
+  const salesAmount = currentWMA.map((item) => item.salesAmount);
+  const wmaValue = currentWMA.map((item) => item.wma);
+
   return (
     <Layout>
       <div className="p-10 bg-gray-50">
@@ -92,10 +113,13 @@ const CalculateAlkes = () => {
               </tr>
             </thead>
             <tbody>
-              {currentWMA.map((item, index) => (
-                <tr key={index}>
+              {currentWMA.map((item, index = 0) => (
+                <tr
+                  key={index}
+                  className={`${index === 0 ? "font-bold bg-blue-200" : ""}`}
+                >
                   <td>{index + 1}</td>
-                  <td>Week {item.index + 2}</td>
+                  <td>Week {item.index + 1}</td>
                   <td>{item.salesAmount}</td>
                   <td>{item?.periods?.join(", ")}</td>
                   <td>{item.totalPeriod}</td>
@@ -131,7 +155,18 @@ const CalculateAlkes = () => {
             Next &#8594;
           </button>
         </div>
+
+        <div>
+          <h2 className="text-xl font-bold">Mean Squared Error (MSE)</h2>
+          {mse !== null ? (
+            <p>{mse.toFixed(2)}</p> // Menampilkan MSE dengan dua desimal
+          ) : (
+            <p>Menghitung nilai MSE...</p>
+          )}
+        </div>
       </div>
+
+      <LineChart actual={salesAmount} wma={wmaValue} />
     </Layout>
   );
 };

@@ -2,10 +2,6 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LineChart = ({ actual, wma }) => {
-  // Pastikan data aktual memiliki satu elemen kurang dari data WMA
-  if (actual.length >= wma.length) {
-    actual = actual.slice(0, wma.length - 1);
-  }
   const chartData = {
     series: [
       {

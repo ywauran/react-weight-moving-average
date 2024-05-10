@@ -45,10 +45,6 @@ const Login = () => {
             <h1 className="mb-4 text-4xl font-bold text-center text-gray-800">
               Masuk
             </h1>
-            <p className="text-base font-medium text-gray-600 mb-7">
-              Aplikasi prediksi penjualan alat kesahatan menggunakan metode
-              Weighted Moving Average
-            </p>
             {errorMessage && (
               <div className="w-full p-2 mb-8 font-semibold text-center text-red-600 bg-red-300 rounded-md">
                 <p>{errorMessage}</p>
@@ -76,7 +72,7 @@ const Login = () => {
                 />
               </svg>
               <input
-                className="pl-2 border-none outline-none"
+                className="w-full p-[4px] border-none outline-none"
                 type="email"
                 autoComplete="email"
                 value={email}
@@ -105,7 +101,7 @@ const Login = () => {
                 />
               </svg>
               <input
-                className="pl-2 border-none outline-none"
+                className="w-full p-[4px] border-none outline-none "
                 type="password"
                 value={password}
                 onChange={(e) => {
