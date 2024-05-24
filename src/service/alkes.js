@@ -83,27 +83,3 @@ export async function deleteAlkes(id) {
     throw error;
   }
 }
-
-// export const getData = async (restaurantId: string, page: number = 1) => {
-//   const pageSize = 5;
-//   let result = [];
-//   let error;
-
-//   try {
-//     const response = await db
-//       .collection("/ratings")
-//       .where("restaurantId", "==", restaurantId)
-//       .orderBy("ratedAt", "==", "desc")
-//       // only show 5 results per fetch
-//       .limit(pageSize)
-//       // on the first page, offset by 0 (= show latest 5 results)
-//       // then, for each next page, jump forward by 5 (= page size)
-//       .offset(pageSize * (page - 1))
-//       .get()
-//     response.docs.map(doc => result.push(doc.data()))
-//   } catch (e) {
-//     error = e as Error;
-//     // handle error
-//   }
-//   return { error, result }
-// }

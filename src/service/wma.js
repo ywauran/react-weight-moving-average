@@ -26,7 +26,6 @@ const calculateWMA = (sales, period) => {
     }
     const wma = (sum / weightSum).toFixed(2);
 
-    // Membuat string yang mencakup perulangan untuk mengalikan setiap elemen dalam wmaDetails dengan period
     let wmaDetailsString = "";
     for (let i = 0; i < wmaDetails.length; i++) {
       wmaDetailsString += wmaDetails[i].resultString;

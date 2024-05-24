@@ -2,7 +2,6 @@ import { NavLink } from "react-router-dom";
 import { doSignOut } from "../../firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-// Define your navigation data
 const navData = [
   {
     path: "/alkes",

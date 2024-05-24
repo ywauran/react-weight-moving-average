@@ -86,7 +86,7 @@ const CalculateAlkes = () => {
         <h1 className="mb-8 text-3xl font-bold">Perhitungan {alkes?.name}</h1>
         <div className="mb-8">
           <label htmlFor="period" className="label">
-            Periode
+            Jumlah Periode (Mingguan)
           </label>
           <input
             type="number"
@@ -104,10 +104,10 @@ const CalculateAlkes = () => {
             <thead>
               <tr>
                 <th>No</th>
-                <th>Week</th>
-                <th>Sales</th>
-                <th>Weights</th>
-                <th>Total Weight</th>
+                <th>Minggu Ke-</th>
+                <th>Penjualan</th>
+                <th>Bobot</th>
+                <th>Total Bobot</th>
                 <th>WMA Detail</th>
                 <th>Weighted Moving Average</th>
               </tr>
