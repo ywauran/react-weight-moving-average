@@ -99,8 +99,31 @@ const DetailAlkes = () => {
             />
           </Modal>
         )}
-
-        <h1 className="mb-8 text-3xl font-bold">{alkes?.name}</h1>
+        <button className="mt-20 btn">
+          <Link
+            to="/alkes"
+            className="flex items-center justify-center space-x-3"
+          >
+            <span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                />
+              </svg>
+            </span>
+            <span>Kembali</span>
+          </Link>
+        </button>
+        <h1 className="my-8 text-3xl font-bold">{alkes?.name}</h1>
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => setIsModalCreate(true)}
