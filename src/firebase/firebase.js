@@ -12,13 +12,10 @@ const firebaseConfig = {
   measurementId: "G-HK3VQQZFEJ",
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 
-// Dapatkan instance autentikasi Firebase
 const auth = getAuth(app);
 
-// Dapatkan instance Firestore Firebase
 const db = getFirestore(app);
 
 export { app, auth, db };

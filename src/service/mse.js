@@ -3,10 +3,23 @@ export function calculateMSE(actual, predicted) {
     throw new Error("The arrays must be of equal length.");
   }
 
-  const sumOfSquares = actual.reduce((acc, value, index) => {
-    const error = value - predicted[index];
-    return acc + error * error;
+  const sumOfPercentageErrors = actual.reduce((acc, value, index) => {
+    const error = Math.abs((value - predicted[index]) / value);
+    return acc + error;
   }, 0);
 
-  return sumOfSquares / actual.length;
+  return (sumOfPercentageErrors / actual.length) * 100;
+}
+
+export function calculateMAPE(actual, predicted) {
+  if (actual.length !== predicted.length) {
+    throw new Error("The arrays must be of equal length.");
+  }
+
+  const sumOfPercentageErrors = actual.reduce((acc, value, index) => {
+    const error = Math.abs((value - predicted[index]) / value);
+    return acc + error;
+  }, 0);
+
+  return (sumOfPercentageErrors / actual.length) * 100;
 }

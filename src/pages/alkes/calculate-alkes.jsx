@@ -5,7 +5,7 @@ import LineChart from "../../components/chart/line-chart";
 import { getAlkesById } from "../../service/alkes";
 import { getSalesByAlkesId } from "../../service/sales";
 import calculateWMA from "../../service/wma";
-import { calculateMSE } from "../../service/mse";
+import { calculateMSE, calculateMAPE } from "../../service/mse";
 
 const CalculateAlkes = () => {
   const { id } = useParams();
@@ -17,6 +17,7 @@ const CalculateAlkes = () => {
   const itemsPerPage = 15;
 
   const [mse, setMse] = useState(null);
+  const [mape, setMape] = useState(null);
 
   useEffect(() => {
     if (wma.length > 0 && sales.length > 0) {
@@ -30,6 +31,9 @@ const CalculateAlkes = () => {
         return isNaN(value) ? 0 : value;
       });
       const newMse = calculateMSE(actualSales, predictedWMA);
+
+      const newMape = calculateMAPE(actualSales, predictedWMA);
+      setMape(newMape);
       setMse(newMse);
     }
   }, [sales, wma]);
@@ -138,7 +142,7 @@ const CalculateAlkes = () => {
             disabled={currentPageWMA === 1}
             className="btn"
           >
-            &#8592; Prev
+            &#8592;
           </button>
           <span>{currentPageWMA}</span>
           <button
@@ -152,16 +156,26 @@ const CalculateAlkes = () => {
             disabled={currentPageWMA === totalWMAPages}
             className="btn"
           >
-            Next &#8594;
+            &#8594;
           </button>
         </div>
 
         <div>
           <h2 className="text-xl font-bold">Mean Squared Error (MSE)</h2>
           {mse !== null ? (
-            <p>{mse.toFixed(2)}</p> // Menampilkan MSE dengan dua desimal
+            <p>{mse.toFixed(2)}</p>
           ) : (
             <p>Menghitung nilai MSE...</p>
+          )}
+        </div>
+        <div className="my-4">
+          <h2 className="text-xl font-bold">
+            Mean Absolute Percentage Error (MAPE)
+          </h2>
+          {mse !== null ? (
+            <p>{mape.toFixed(2)} %</p>
+          ) : (
+            <p>Menghitung nilai MAPE...</p>
           )}
         </div>
       </div>
